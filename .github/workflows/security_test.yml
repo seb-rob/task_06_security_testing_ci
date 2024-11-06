@@ -40,18 +40,31 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
+      # Log in to Docker Hub (if needed)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+
       # Run OWASP ZAP Docker scan
       - name: Run OWASP ZAP scan
         run: |
+          # Start the Node.js application in the background (ensure it's listening)
           nohup npm start &
 
+          # Wait for the application to be up and running (adjust time as needed)
+          echo "Waiting for the application to start..."
+          sleep 10
+
+          # Check if the application is responding before running the scan
+          curl --silent --fail http://localhost:3000 || exit 1
+
           # Run OWASP ZAP scan against the running application
+          echo "Running OWASP ZAP scan..."
           docker run --rm -t owasp/zap2docker zap-baseline.py -t http://localhost:3000
 
           # Sleep for a few seconds to allow ZAP to complete the scan
           sleep 30
           
-      # Archive the ZAP report (optional)
+      # Upload the ZAP report (optional)
       - name: Upload ZAP report
         uses: actions/upload-artifact@v3
         with:
