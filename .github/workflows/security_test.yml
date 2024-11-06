@@ -46,7 +46,7 @@ jobs:
           nohup npm start &
 
           # Run OWASP ZAP scan against the running application
-          docker run --rm -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:3000
+          docker run --rm -t owasp/zap2docker zap-baseline.py -t http://localhost:3000
 
           # Sleep for a few seconds to allow ZAP to complete the scan
           sleep 30
